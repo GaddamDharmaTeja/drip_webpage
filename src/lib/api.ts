@@ -95,3 +95,16 @@ export function submitContact(payload: { name: string; email: string; message: s
     body: JSON.stringify(payload),
   })
 }
+
+export type SiteContact = {
+  id: string
+  title: string
+  address: string
+  email: string
+  phone: string
+  hours: string
+}
+
+export function fetchSiteContact() {
+  return request<SiteContact>('/site-contact')
+}

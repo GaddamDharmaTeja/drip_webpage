@@ -1,10 +1,28 @@
-import { useState, type FormEvent } from 'react'
-import { submitContact } from '../lib/api'
+import { useEffect, useState, type FormEvent } from 'react'
+import { fetchSiteContact, submitContact, type SiteContact } from '../lib/api'
+
+const fallbackContact: SiteContact = {
+  id: 'main',
+  title: 'DripGrow HQ',
+  address: '12 Agri Tech Park, Nashik Road, Maharashtra 422101',
+  email: 'hello@dripgrow.example',
+  phone: '+91 98765 43210',
+  hours: 'Mon–Sat, 9:00–18:00 IST',
+}
 
 export function Contact() {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [hq, setHq] = useState<SiteContact>(fallbackContact)
+
+  useEffect(() => {
+    void fetchSiteContact()
+      .then(setHq)
+      .catch(() => {
+        /* keep fallback until API is available */
+      })
+  }, [])
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -32,23 +50,23 @@ export function Contact() {
 
       <div className="mt-10 grid gap-8 lg:grid-cols-2">
         <div className="rounded-2xl border border-leaf/10 bg-soil p-8 text-stone-200">
-          <h2 className="font-display text-2xl text-white">DripGrow HQ</h2>
+          <h2 className="font-display text-2xl text-white">{hq.title}</h2>
           <dl className="mt-6 space-y-4 text-sm">
             <div>
               <dt className="font-semibold text-leaf-light">Address</dt>
-              <dd className="mt-1">12 Agri Tech Park, Nashik Road, Maharashtra 422101</dd>
+              <dd className="mt-1">{hq.address}</dd>
             </div>
             <div>
               <dt className="font-semibold text-leaf-light">Email</dt>
-              <dd className="mt-1">hello@dripgrow.example</dd>
+              <dd className="mt-1">{hq.email}</dd>
             </div>
             <div>
               <dt className="font-semibold text-leaf-light">Phone / WhatsApp</dt>
-              <dd className="mt-1">+91 98765 43210</dd>
+              <dd className="mt-1">{hq.phone}</dd>
             </div>
             <div>
               <dt className="font-semibold text-leaf-light">Hours</dt>
-              <dd className="mt-1">Mon–Sat, 9:00–18:00 IST</dd>
+              <dd className="mt-1">{hq.hours}</dd>
             </div>
           </dl>
         </div>
