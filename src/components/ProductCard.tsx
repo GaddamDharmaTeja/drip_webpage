@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { fileUrl } from '../lib/api'
 import { formatINR } from '../lib/money'
 import type { Product } from '../types'
 
@@ -10,7 +11,7 @@ export function ProductCard({ product }: { product: Product }) {
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-leaf/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <Link to={`/product/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-mist">
         <img
-          src={product.image}
+          src={fileUrl(product.image)}
           alt={product.name}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           loading="lazy"

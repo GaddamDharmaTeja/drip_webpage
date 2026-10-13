@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useProducts } from '../context/ProductContext'
-import { fetchProductBySlug } from '../lib/api'
+import { fetchProductBySlug, fileUrl } from '../lib/api'
 import { formatINR } from '../lib/money'
 import type { CropType, Product } from '../types'
 
@@ -92,7 +92,7 @@ export function ProductDetail() {
         <div>
           <div className="aspect-square overflow-hidden rounded-2xl border border-leaf/10 bg-white">
             <img
-              src={product.images[activeImage] ?? product.image}
+              src={fileUrl(product.images[activeImage] ?? product.image)}
               alt={product.name}
               className="h-full w-full object-cover"
             />
@@ -107,7 +107,7 @@ export function ProductDetail() {
                   i === activeImage ? 'border-leaf' : 'border-transparent'
                 }`}
               >
-                <img src={src} alt="" className="h-full w-full object-cover" />
+                <img src={fileUrl(src)} alt="" className="h-full w-full object-cover" />
               </button>
             ))}
           </div>

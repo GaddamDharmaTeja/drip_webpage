@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useProducts } from '../context/ProductContext'
+import { fileUrl } from '../lib/api'
 import { formatINR } from '../lib/money'
 
 export function Cart() {
@@ -42,7 +43,7 @@ export function Cart() {
                   <tr key={item.productId} className="border-b border-leaf/5">
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <img src={product.image} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                        <img src={fileUrl(product.image)} alt="" className="h-14 w-14 rounded-lg object-cover" />
                         <div>
                           <Link to={`/product/${product.slug}`} className="font-semibold text-soil hover:text-leaf">
                             {product.name}

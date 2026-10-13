@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { processSteps, projects as fallbackProjects } from '../data/content'
+import { fileUrl } from '../lib/api'
 
 type ProjectCase = {
   id: string
@@ -36,7 +37,7 @@ export function Projects() {
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
         {projects.map((p) => (
           <article key={p.id} className="overflow-hidden rounded-2xl border border-leaf/10 bg-white">
-            <img src={p.image} alt="" className="aspect-[16/10] w-full object-cover" />
+            <img src={fileUrl(p.image)} alt="" className="aspect-[16/10] w-full object-cover" />
             <div className="p-5">
               <h2 className="font-semibold text-soil">{p.title}</h2>
               <p className="mt-1 text-xs font-medium uppercase tracking-wide text-leaf">

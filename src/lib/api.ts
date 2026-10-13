@@ -2,6 +2,20 @@ import type { Address, DeliveryOption, Order, Product } from '../types'
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '/api'
 
+/** Resolve GridFS `/api/files/...` paths against the API host in production. */
+export function fileUrl(pathOrUrl?: string | null) {
+  if (!pathOrUrl) return ''
+  if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) return pathOrUrl
+
+  const apiRoot = API_BASE.replace(/\/$/, '')
+  const apiOrigin = apiRoot.startsWith('http') ? apiRoot.replace(/\/api$/, '') : ''
+
+  if (pathOrUrl.startsWith('/api/') || pathOrUrl.startsWith('/')) {
+    return apiOrigin ? `${apiOrigin}${pathOrUrl}` : pathOrUrl
+  }
+  return `${apiRoot}/files/${pathOrUrl}`
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: {
