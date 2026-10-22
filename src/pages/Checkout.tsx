@@ -5,6 +5,8 @@ import { useOrders } from '../context/OrdersContext'
 import { useProducts } from '../context/ProductContext'
 import { formatINR } from '../lib/money'
 import type { Address, DeliveryOption } from '../types'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '../context/AuthContext'
 
 const emptyAddress: Address = {
   fullName: '',
@@ -20,12 +22,14 @@ const emptyAddress: Address = {
 const steps = ['Address', 'Delivery', 'Payment', 'Review'] as const
 
 export function Checkout() {
+  const { t } = useTranslation()
   const { items, subtotal, clearCart } = useCart()
   const { getById } = useProducts()
   const { placeOrder } = useOrders()
+  const { customer, saveAddress } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
-  const [address, setAddress] = useState<Address>(emptyAddress)
+  const [address, setAddress] = useState<Address>(() => customer?.addresses[0] ?? (customer ? { ...emptyAddress, fullName: customer.fullName, phone: customer.phone, email: customer.email } : emptyAddress))
   const [delivery, setDelivery] = useState<DeliveryOption>('standard')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -36,9 +40,9 @@ export function Checkout() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <h1 className="font-display text-3xl text-forest">Nothing to checkout</h1>
+        <h1 className="font-display text-3xl text-forest">{t('checkout.empty')}</h1>
         <Link to="/shop" className="btn-primary mt-6">
-          Shop products
+          {t('home.shop')}
         </Link>
       </div>
     )
@@ -46,15 +50,15 @@ export function Checkout() {
 
   function validateAddress() {
     if (!address.fullName || !address.phone || !address.line1 || !address.city || !address.state || !address.pincode) {
-      setError('Please fill all required address fields.')
+      setError(t('checkout.required'))
       return false
     }
     if (!/^\d{10}$/.test(address.phone.replace(/\s/g, ''))) {
-      setError('Enter a valid 10-digit phone number.')
+      setError(t('checkout.phoneInvalid'))
       return false
     }
     if (!/^\d{6}$/.test(address.pincode)) {
-      setError('Enter a valid 6-digit pincode.')
+      setError(t('checkout.pincodeInvalid'))
       return false
     }
     setError('')
@@ -80,10 +84,11 @@ export function Checkout() {
         address,
         delivery,
       })
+      if (customer) saveAddress(address)
       clearCart()
       navigate(`/orders?placed=${encodeURIComponent(order.id)}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not place order')
+      setError(err instanceof Error ? err.message : t('checkout.failed'))
     } finally {
       setSubmitting(false)
     }
@@ -91,8 +96,8 @@ export function Checkout() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 lg:px-6">
-      <h1 className="font-display text-4xl text-forest">Checkout</h1>
-      <p className="mt-1 text-stone-600">Pay with Cash on Delivery at your doorstep.</p>
+      <h1 className="font-display text-4xl text-forest">{t('checkout.title')}</h1>
+      <p className="mt-1 text-stone-600">{t('checkout.subtitle')}</p>
 
       <ol className="mt-8 flex flex-wrap gap-2">
         {steps.map((label, i) => (
@@ -106,7 +111,7 @@ export function Checkout() {
                   : 'bg-white text-stone-400 border border-stone-200'
             }`}
           >
-            {i + 1}. {label}
+            {i + 1}. {t(`checkout.${['address', 'delivery', 'payment', 'review'][i]}`)}
           </li>
         ))}
       </ol>
@@ -115,14 +120,14 @@ export function Checkout() {
         <div className="rounded-2xl border border-leaf/10 bg-white p-6">
           {step === 0 && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Full name *" value={address.fullName} onChange={(v) => setAddress({ ...address, fullName: v })} />
-              <Field label="Phone *" value={address.phone} onChange={(v) => setAddress({ ...address, phone: v })} />
-              <Field label="Email" value={address.email} onChange={(v) => setAddress({ ...address, email: v })} className="sm:col-span-2" />
-              <Field label="Address line 1 *" value={address.line1} onChange={(v) => setAddress({ ...address, line1: v })} className="sm:col-span-2" />
-              <Field label="Address line 2" value={address.line2} onChange={(v) => setAddress({ ...address, line2: v })} className="sm:col-span-2" />
-              <Field label="City *" value={address.city} onChange={(v) => setAddress({ ...address, city: v })} />
-              <Field label="State *" value={address.state} onChange={(v) => setAddress({ ...address, state: v })} />
-              <Field label="Pincode *" value={address.pincode} onChange={(v) => setAddress({ ...address, pincode: v })} />
+              <Field label={t('checkout.fullName')} value={address.fullName} onChange={(v) => setAddress({ ...address, fullName: v })} />
+              <Field label={t('checkout.phone')} value={address.phone} onChange={(v) => setAddress({ ...address, phone: v })} />
+              <Field label={t('common.email')} value={address.email} onChange={(v) => setAddress({ ...address, email: v })} className="sm:col-span-2" />
+              <Field label={t('checkout.address1')} value={address.line1} onChange={(v) => setAddress({ ...address, line1: v })} className="sm:col-span-2" />
+              <Field label={t('checkout.address2')} value={address.line2} onChange={(v) => setAddress({ ...address, line2: v })} className="sm:col-span-2" />
+              <Field label={t('checkout.city')} value={address.city} onChange={(v) => setAddress({ ...address, city: v })} />
+              <Field label={t('checkout.state')} value={address.state} onChange={(v) => setAddress({ ...address, state: v })} />
+              <Field label={t('checkout.pincode')} value={address.pincode} onChange={(v) => setAddress({ ...address, pincode: v })} />
             </div>
           )}
 
@@ -130,13 +135,13 @@ export function Checkout() {
             <div className="space-y-3">
               <DeliveryCard
                 selected={delivery === 'standard'}
-                title="Standard delivery"
+                title={t('checkout.standard')}
                 detail={subtotal >= 5000 ? 'Free · 5–7 business days' : '₹199 · 5–7 business days'}
                 onSelect={() => setDelivery('standard')}
               />
               <DeliveryCard
                 selected={delivery === 'express'}
-                title="Express delivery"
+                title={t('checkout.express')}
                 detail="₹399 · 2–3 business days"
                 onSelect={() => setDelivery('express')}
               />
@@ -148,7 +153,7 @@ export function Checkout() {
               <label className="flex cursor-pointer items-start gap-3">
                 <input type="radio" checked readOnly className="mt-1 accent-leaf" />
                 <div>
-                  <p className="font-semibold text-forest">Cash on Delivery</p>
+                  <p className="font-semibold text-forest">{t('checkout.cash')}</p>
                   <p className="mt-1 text-sm text-stone-600">
                     Pay in cash when your irrigation kit arrives. No online payment required.
                   </p>

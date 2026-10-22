@@ -4,10 +4,12 @@ import { ProductCard } from '../components/ProductCard'
 import { useProducts } from '../context/ProductContext'
 import { brands, categories, cropTypes } from '../lib/money'
 import type { CropType } from '../types'
+import { useTranslation } from 'react-i18next'
 
 type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'rating'
 
 export function Shop() {
+  const { t } = useTranslation()
   const { products, loading, error } = useProducts()
   const [params] = useSearchParams()
   const q = (params.get('q') ?? '').toLowerCase()
@@ -49,8 +51,8 @@ export function Shop() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 lg:px-6">
       <div className="mb-8">
-        <h1 className="font-display text-4xl text-forest">Shop</h1>
-        <p className="mt-1 text-stone-600">Irrigation systems and components for every farm.</p>
+        <h1 className="font-display text-4xl text-forest">{t('shop.title')}</h1>
+        <p className="mt-1 text-stone-600">{t('shop.description')}</p>
       </div>
 
       {error && (
@@ -61,29 +63,29 @@ export function Shop() {
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
         <aside className="h-fit space-y-6 rounded-2xl border border-leaf/10 bg-white p-5 lg:sticky lg:top-24">
-          <FilterGroup title="Category">
+          <FilterGroup title={t('shop.category')}>
             <select className="input" value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="">All</option>
+              <option value="">{t('common.all')}</option>
               {categories.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {t(`data.${c}`)}
                 </option>
               ))}
             </select>
           </FilterGroup>
 
-          <FilterGroup title="Crop type">
+          <FilterGroup title={t('shop.crop')}>
             <select className="input" value={crop} onChange={(e) => setCrop(e.target.value)}>
-              <option value="">All</option>
+              <option value="">{t('common.all')}</option>
               {cropTypes.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {t(`data.${c}`)}
                 </option>
               ))}
             </select>
           </FilterGroup>
 
-          <FilterGroup title={`Price up to ₹${maxPrice.toLocaleString('en-IN')}`}>
+          <FilterGroup title={t('shop.price', { price: maxPrice.toLocaleString('en-IN') })}>
             <input
               type="range"
               min={500}
@@ -95,9 +97,9 @@ export function Shop() {
             />
           </FilterGroup>
 
-          <FilterGroup title="Brand">
+          <FilterGroup title={t('shop.brand')}>
             <select className="input" value={brand} onChange={(e) => setBrand(e.target.value)}>
-              <option value="">All</option>
+              <option value="">{t('common.all')}</option>
               {brands.map((b) => (
                 <option key={b} value={b}>
                   {b}
@@ -113,7 +115,7 @@ export function Shop() {
               onChange={(e) => setInStockOnly(e.target.checked)}
               className="accent-leaf"
             />
-            In stock only
+            {t('shop.inStock')}
           </label>
 
           <button
@@ -127,14 +129,14 @@ export function Shop() {
               setInStockOnly(false)
             }}
           >
-            Reset filters
+            {t('shop.reset')}
           </button>
         </aside>
 
         <div>
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm font-medium text-stone-600">
-              {category || 'All products'} ({filtered.length})
+              {category ? t(`data.${category}`) : t('shop.products')} ({filtered.length})
               {q ? ` · “${q}”` : ''}
             </p>
             <select
@@ -142,18 +144,18 @@ export function Shop() {
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
             >
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="rating">Top rated</option>
+              <option value="featured">{t('shop.featured')}</option>
+              <option value="price-asc">{t('shop.lowHigh')}</option>
+              <option value="price-desc">{t('shop.highLow')}</option>
+              <option value="rating">{t('shop.topRated')}</option>
             </select>
           </div>
 
           {loading ? (
-            <p className="text-stone-600">Loading products…</p>
+            <p className="text-stone-600">{t('shop.loading')}</p>
           ) : filtered.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-leaf/30 bg-white p-10 text-center text-stone-600">
-              No products match these filters.
+              {t('shop.empty')}
             </p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">

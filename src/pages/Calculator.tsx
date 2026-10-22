@@ -3,12 +3,17 @@ import { Link } from 'react-router-dom'
 import { ProductCard } from '../components/ProductCard'
 import { useCart } from '../context/CartContext'
 import { useProducts } from '../context/ProductContext'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '../context/AuthContext'
 
 const steps = ['Farm Details', 'Crop Details', 'Water Source', 'Results'] as const
 
 export function Calculator() {
+  const { t } = useTranslation()
   const { products } = useProducts()
   const { addItem } = useCart()
+  const { customer, savePlan } = useAuth()
+  const [planNotice, setPlanNotice] = useState('')
   const [step, setStep] = useState(0)
   const [farmSize, setFarmSize] = useState('1')
   const [shape, setShape] = useState<'Rectangular' | 'Circular'>('Rectangular')
@@ -58,10 +63,15 @@ export function Calculator() {
     recommendations.forEach((p) => addItem({ productId: p.id, quantity: 1, cropType: crop as never }))
   }
 
+  function saveCurrentPlan() {
+    const saved = savePlan({ farmSize, crop, waterSource: source, recommendationCount: recommendations.length })
+    setPlanNotice(saved ? 'Your plan is saved in My Farm.' : 'Sign in to My Farm to save this plan and view it later.')
+  }
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 lg:px-6">
-      <h1 className="font-display text-4xl text-forest">Irrigation Requirement Calculator</h1>
-      <p className="mt-1 text-stone-600">Answer a few questions to get a starter kit recommendation.</p>
+      <h1 className="font-display text-4xl text-forest">{t('calculator.title')}</h1>
+      <p className="mt-1 text-stone-600">{t('calculator.subtitle')}</p>
 
       <ol className="mt-8 flex flex-wrap gap-2">
         {steps.map((label, i) => (
@@ -71,7 +81,7 @@ export function Calculator() {
               i === step ? 'bg-leaf text-white' : i < step ? 'bg-mist text-forest' : 'bg-white text-stone-400 border'
             }`}
           >
-            {label}
+            {t(`calculator.${['farm', 'crop', 'water', 'results'][i]}`)}
           </li>
         ))}
       </ol>
@@ -80,11 +90,11 @@ export function Calculator() {
         {step === 0 && (
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="label">Farm size (acres)</label>
+              <label className="label">{t('calculator.farmSize')}</label>
               <input className="input" value={farmSize} onChange={(e) => setFarmSize(e.target.value)} />
             </div>
             <div>
-              <label className="label">Shape</label>
+              <label className="label">{t('calculator.shape')}</label>
               <select className="input" value={shape} onChange={(e) => setShape(e.target.value as typeof shape)}>
                 <option>Rectangular</option>
                 <option>Circular</option>
@@ -93,11 +103,11 @@ export function Calculator() {
             {shape === 'Rectangular' && (
               <>
                 <div>
-                  <label className="label">Length (m)</label>
+                  <label className="label">{t('calculator.length')}</label>
                   <input className="input" value={length} onChange={(e) => setLength(e.target.value)} />
                 </div>
                 <div>
-                  <label className="label">Width (m)</label>
+                  <label className="label">{t('calculator.width')}</label>
                   <input className="input" value={width} onChange={(e) => setWidth(e.target.value)} />
                 </div>
               </>
@@ -108,7 +118,7 @@ export function Calculator() {
         {step === 1 && (
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <label className="label">Crop type</label>
+              <label className="label">{t('calculator.cropType')}</label>
               <select className="input" value={crop} onChange={(e) => setCrop(e.target.value)}>
                 <option>Vegetables</option>
                 <option>Fruits</option>
@@ -118,11 +128,11 @@ export function Calculator() {
               </select>
             </div>
             <div>
-              <label className="label">Row spacing (cm)</label>
+              <label className="label">{t('calculator.row')}</label>
               <input className="input" value={rowSpacing} onChange={(e) => setRowSpacing(e.target.value)} />
             </div>
             <div>
-              <label className="label">Plant spacing (cm)</label>
+              <label className="label">{t('calculator.plant')}</label>
               <input className="input" value={plantSpacing} onChange={(e) => setPlantSpacing(e.target.value)} />
             </div>
           </div>
@@ -131,7 +141,7 @@ export function Calculator() {
         {step === 2 && (
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <label className="label">Water source</label>
+              <label className="label">{t('calculator.source')}</label>
               <select className="input" value={source} onChange={(e) => setSource(e.target.value)}>
                 <option>Borewell</option>
                 <option>Well</option>
@@ -140,11 +150,11 @@ export function Calculator() {
               </select>
             </div>
             <div>
-              <label className="label">Flow rate (LPS)</label>
+              <label className="label">{t('calculator.flow')}</label>
               <input className="input" value={flowRate} onChange={(e) => setFlowRate(e.target.value)} />
             </div>
             <div>
-              <label className="label">Pressure (kg/cm²)</label>
+              <label className="label">{t('calculator.pressure')}</label>
               <input className="input" value={pressure} onChange={(e) => setPressure(e.target.value)} />
             </div>
           </div>
@@ -163,12 +173,16 @@ export function Calculator() {
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
               <button type="button" className="btn-primary" onClick={addAll}>
-                Add all to cart
+                {t('calculator.addAll')}
               </button>
               <Link to="/shop" className="btn-outline">
-                Browse more
+                {t('calculator.browse')}
               </Link>
+              <button type="button" className="btn-outline" onClick={saveCurrentPlan}>
+                {customer ? 'Save this plan' : 'Sign in to save plan'}
+              </button>
             </div>
+            {planNotice && <p className="mt-4 text-sm font-semibold text-leaf">{planNotice}</p>}
           </div>
         )}
 
@@ -176,11 +190,11 @@ export function Calculator() {
           <div className="mt-6 flex gap-3">
             {step > 0 && (
               <button type="button" className="btn-outline" onClick={() => setStep((s) => s - 1)}>
-                Back
+                {t('common.back')}
               </button>
             )}
             <button type="button" className="btn-primary" onClick={next}>
-              {step === 2 ? 'See recommendations' : 'Continue'}
+              {step === 2 ? t('calculator.recommend') : t('common.continue')}
             </button>
           </div>
         )}

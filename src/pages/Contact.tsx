@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { fetchSiteContact, submitContact, type SiteContact } from '../lib/api'
+import { useTranslation } from 'react-i18next'
 
 const fallbackContact: SiteContact = {
   id: 'main',
@@ -11,6 +12,7 @@ const fallbackContact: SiteContact = {
 }
 
 export function Contact() {
+  const { t } = useTranslation()
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -45,27 +47,27 @@ export function Contact() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 lg:px-6">
-      <h1 className="font-display text-4xl text-forest">Contact Us</h1>
-      <p className="mt-1 text-stone-600">Quotes, installation booking, and bulk enquiries.</p>
+      <h1 className="font-display text-4xl text-forest">{t('pages.contact')}</h1>
+      <p className="mt-1 text-stone-600">{t('pages.contactText')}</p>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-2">
         <div className="rounded-2xl border border-leaf/10 bg-soil p-8 text-stone-200">
           <h2 className="font-display text-2xl text-white">{hq.title}</h2>
           <dl className="mt-6 space-y-4 text-sm">
             <div>
-              <dt className="font-semibold text-leaf-light">Address</dt>
+              <dt className="font-semibold text-leaf-light">{t('pages.address')}</dt>
               <dd className="mt-1">{hq.address}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-leaf-light">Email</dt>
+              <dt className="font-semibold text-leaf-light">{t('common.email')}</dt>
               <dd className="mt-1">{hq.email}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-leaf-light">Phone / WhatsApp</dt>
+              <dt className="font-semibold text-leaf-light">{t('pages.phone')}</dt>
               <dd className="mt-1">{hq.phone}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-leaf-light">Hours</dt>
+              <dt className="font-semibold text-leaf-light">{t('pages.hours')}</dt>
               <dd className="mt-1">{hq.hours}</dd>
             </div>
           </dl>
@@ -74,29 +76,29 @@ export function Contact() {
         <form onSubmit={(e) => void onSubmit(e)} className="rounded-2xl border border-leaf/10 bg-white p-8">
           {sent ? (
             <div>
-              <p className="font-display text-2xl text-forest">Message sent</p>
-              <p className="mt-2 text-stone-600">Saved to MongoDB — our team will reply soon.</p>
+              <p className="font-display text-2xl text-forest">{t('pages.sent')}</p>
+              <p className="mt-2 text-stone-600">{t('pages.sentText')}</p>
               <button type="button" className="btn-outline mt-6" onClick={() => setSent(false)}>
-                Send another
+                {t('pages.again')}
               </button>
             </div>
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="label">Name</label>
+                <label className="label">{t('common.name')}</label>
                 <input className="input" required name="name" />
               </div>
               <div>
-                <label className="label">Email</label>
+                <label className="label">{t('common.email')}</label>
                 <input className="input" type="email" required name="email" />
               </div>
               <div>
-                <label className="label">Message</label>
+                <label className="label">{t('common.message')}</label>
                 <textarea className="input min-h-32" required name="message" />
               </div>
               {error && <p className="text-sm font-medium text-red-600">{error}</p>}
               <button type="submit" className="btn-primary" disabled={submitting}>
-                {submitting ? 'Sending…' : 'Send message'}
+                {submitting ? t('common.sending') : t('common.send')}
               </button>
             </div>
           )}

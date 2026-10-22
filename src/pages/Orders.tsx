@@ -1,21 +1,27 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useOrders } from '../context/OrdersContext'
 import { formatINR } from '../lib/money'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '../context/AuthContext'
 
 export function Orders() {
+  const { t } = useTranslation()
   const { orders, loading, error, getOrder } = useOrders()
+  const { customer } = useAuth()
   const [params] = useSearchParams()
   const placedId = params.get('placed')
   const placed = placedId ? getOrder(placedId) : undefined
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 lg:px-6">
-      <h1 className="font-display text-4xl text-forest">My Orders</h1>
-      <p className="mt-1 text-stone-600">Orders from MongoDB via Spring Boot. Payment: Cash on Delivery.</p>
+      <h1 className="font-display text-4xl text-forest">{t('pages.orders')}</h1>
+      <p className="mt-1 text-stone-600">Track every DripGrow delivery and its latest status.</p>
+
+      {!customer && <div className="mt-6 rounded-2xl border border-leaf/20 bg-mist/50 p-5"><p className="font-semibold text-forest">Sign in to see your orders</p><p className="mt-1 text-sm text-stone-600">Your purchase history is kept inside My Farm, together with saved plans and addresses.</p><Link to="/sign-in" className="btn-primary mt-4">Sign in to My Farm</Link></div>}
 
       {placed && (
         <div className="mt-6 rounded-2xl border border-leaf/30 bg-mist/60 p-5">
-          <p className="font-semibold text-forest">Order placed successfully</p>
+          <p className="font-semibold text-forest">{t('pages.orderPlaced')}</p>
           <p className="mt-1 text-sm text-stone-700">
             Order <span className="font-mono font-semibold">{placed.id}</span> confirmed. Pay{' '}
             <strong>{formatINR(placed.total)}</strong> in cash on delivery.
@@ -27,13 +33,13 @@ export function Orders() {
         <p className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
       )}
 
-      {loading ? (
+      {customer && (loading ? (
         <p className="mt-10 text-stone-600">Loading orders…</p>
       ) : orders.length === 0 ? (
         <div className="mt-10 rounded-2xl border border-dashed border-leaf/30 bg-white p-10 text-center">
-          <p className="text-stone-600">No orders yet.</p>
+          <p className="text-stone-600">{t('pages.noOrders')}</p>
           <Link to="/shop" className="btn-primary mt-4">
-            Start shopping
+            {t('pages.startShopping')}
           </Link>
         </div>
       ) : (
@@ -41,12 +47,12 @@ export function Orders() {
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-leaf/10 bg-mist/40 text-stone-600">
               <tr>
-                <th className="px-4 py-3 font-semibold">Order</th>
-                <th className="px-4 py-3 font-semibold">Date</th>
-                <th className="px-4 py-3 font-semibold">Items</th>
-                <th className="px-4 py-3 font-semibold">Total</th>
-                <th className="px-4 py-3 font-semibold">Payment</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 font-semibold">{t('pages.order')}</th>
+                <th className="px-4 py-3 font-semibold">{t('pages.date')}</th>
+                <th className="px-4 py-3 font-semibold">{t('pages.items')}</th>
+                <th className="px-4 py-3 font-semibold">{t('cart.total')}</th>
+                <th className="px-4 py-3 font-semibold">{t('checkout.payment')}</th>
+                <th className="px-4 py-3 font-semibold">{t('pages.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -75,7 +81,7 @@ export function Orders() {
             </tbody>
           </table>
         </div>
-      )}
+      ))}
     </div>
   )
 }

@@ -1,21 +1,22 @@
 import { useState, type FormEvent } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
-
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/shop', label: 'Shop' },
-  { to: '/solutions', label: 'Solutions' },
-  { to: '/projects', label: 'Projects' },
-  { to: '/resources', label: 'Resources' },
-  { to: '/about', label: 'About' },
-]
+import { useTranslation } from 'react-i18next'
+import { LanguageSelector } from './LanguageSelector'
+import { useAuth } from '../context/AuthContext'
 
 export function Navbar() {
+  const { t } = useTranslation()
   const { itemCount } = useCart()
+  const { customer } = useAuth()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
+  const links = [
+    { to: '/', label: t('nav.home') }, { to: '/shop', label: t('nav.shop') },
+    { to: '/solutions', label: 'Find a Solution' }, { to: '/learn', label: 'Learn' },
+    { to: '/about', label: t('nav.about') },
+  ]
 
   function onSearch(e: FormEvent) {
     e.preventDefault()
@@ -56,26 +57,27 @@ export function Navbar() {
         <form onSubmit={onSearch} className="ml-auto hidden max-w-xs flex-1 md:block">
           <input
             className="input"
-            placeholder="Search products…"
+            placeholder={t('common.search')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search products"
+            aria-label={t('common.search')}
           />
         </form>
 
         <div className="ml-auto flex items-center gap-2 md:ml-0">
           <Link
-            to="/orders"
+            to={customer ? '/my-farm' : '/sign-in'}
             className="rounded-lg p-2 text-stone-600 transition hover:bg-mist hover:text-forest"
-            aria-label="My orders"
-            title="My orders"
+            aria-label={customer ? 'Open My Farm account' : 'Sign in or create an account'}
+            title={customer ? 'My Farm' : 'Sign in'}
           >
             <UserIcon />
+            <span className="hidden text-sm font-semibold sm:inline">{customer ? 'My Farm' : 'Sign in'}</span>
           </Link>
           <Link
             to="/cart"
             className="relative rounded-lg p-2 text-stone-600 transition hover:bg-mist hover:text-forest"
-            aria-label="Cart"
+            aria-label={t('nav.cart')}
           >
             <CartIcon />
             {itemCount > 0 && (
@@ -84,10 +86,11 @@ export function Navbar() {
               </span>
             )}
           </Link>
+          <LanguageSelector />
           <button
             type="button"
             className="rounded-lg p-2 text-stone-600 hover:bg-mist lg:hidden"
-            aria-label="Menu"
+            aria-label={t('nav.menu')}
             onClick={() => setOpen((v) => !v)}
           >
             <MenuIcon />
@@ -100,7 +103,7 @@ export function Navbar() {
           <form onSubmit={onSearch} className="mb-3 md:hidden">
             <input
               className="input"
-              placeholder="Search products…"
+              placeholder={t('common.search')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -121,8 +124,11 @@ export function Navbar() {
                 {l.label}
               </NavLink>
             ))}
+            <Link to={customer ? '/my-farm' : '/sign-in'} className="rounded-md px-3 py-2.5 text-sm font-medium text-forest" onClick={() => setOpen(false)}>
+              {customer ? 'My Farm' : 'Sign in'}
+            </Link>
             <Link to="/calculator" className="rounded-md px-3 py-2.5 text-sm font-medium text-leaf" onClick={() => setOpen(false)}>
-              Plan Your System
+              {t('nav.plan')}
             </Link>
           </div>
         </div>

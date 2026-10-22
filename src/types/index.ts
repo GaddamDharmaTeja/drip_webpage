@@ -48,6 +48,23 @@ export interface Address {
   pincode: string
 }
 
+export interface Customer {
+  id: string
+  fullName: string
+  phone: string
+  email: string
+  addresses: Address[]
+}
+
+export interface SavedPlan {
+  id: string
+  createdAt: string
+  farmSize: string
+  crop: string
+  waterSource: string
+  recommendationCount: number
+}
+
 export type DeliveryOption = 'standard' | 'express'
 
 export interface Order {

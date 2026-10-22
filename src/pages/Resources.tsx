@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { articles } from '../data/content'
+import { useTranslation } from 'react-i18next'
 
 const tags = ['All', 'Guides', 'Crop Specific', 'Installation', 'Case Studies'] as const
 
 export function Resources() {
+  const { t } = useTranslation()
   const [tag, setTag] = useState<(typeof tags)[number]>('All')
   const list = tag === 'All' ? articles : articles.filter((a) => a.tag === tag)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 lg:px-6">
-      <h1 className="font-display text-4xl text-forest">Knowledge Center</h1>
-      <p className="mt-1 text-stone-600">Guides, crop tips, and installation notes from the field.</p>
+      <h1 className="font-display text-4xl text-forest">{t('pages.resources')}</h1>
+      <p className="mt-1 text-stone-600">{t('pages.resourcesText')}</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
         {tags.map((t) => (

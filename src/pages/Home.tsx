@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ProductCard } from '../components/ProductCard'
 import { useProducts } from '../context/ProductContext'
 import { processSteps, solutions } from '../data/content'
+import { useTranslation } from 'react-i18next'
 
 const categories = [
   { name: 'Pipes', emoji: '═' },
@@ -20,6 +21,7 @@ const values = [
 ]
 
 export function Home() {
+  const { t } = useTranslation()
   const { products, loading, error } = useProducts()
   const featured = products
     .filter((p) => p.bestseller || p.category === 'Complete Systems')
@@ -30,7 +32,7 @@ export function Home() {
       <section className="relative isolate min-h-[88vh] overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1800&q=80"
-          alt="Drip irrigation across green farmland"
+          alt={t('home.title')}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-soil/85 via-soil/55 to-forest/35" />
@@ -39,20 +41,20 @@ export function Home() {
             DripGrow
           </p>
           <h1 className="mt-4 max-w-xl text-2xl font-medium leading-snug text-white/95 sm:text-3xl">
-            Smart Irrigation For a Greener Tomorrow.
+            {t('home.title')}
           </h1>
           <p className="mt-4 max-w-md text-base text-white/75">
-            Shop systems, plan your layout, and get farm-ready kits with Cash on Delivery.
+            {t('home.description')}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/shop" className="btn-primary">
-              Shop Products
+              {t('home.shop')}
             </Link>
             <Link to="/calculator" className="btn-secondary">
-              Plan Your System
+              {t('home.plan')}
             </Link>
             <Link to="/contact" className="btn-secondary">
-              Get a Quote
+              {t('home.quote')}
             </Link>
           </div>
         </div>
@@ -72,8 +74,8 @@ export function Home() {
 
       <section className="mx-auto max-w-7xl px-4 pb-16 lg:px-6">
         <div className="mb-8">
-          <h2 className="font-display text-3xl text-forest">Shop by Category</h2>
-          <p className="mt-1 text-stone-600">Components and complete kits for every plot size.</p>
+          <h2 className="font-display text-3xl text-forest">{t('home.categories')}</h2>
+          <p className="mt-1 text-stone-600">{t('home.categoriesDesc')}</p>
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {categories.map((c) => (
@@ -85,7 +87,7 @@ export function Home() {
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-mist text-xl text-leaf">
                 {c.emoji}
               </span>
-              <span className="text-sm font-semibold text-soil">{c.name}</span>
+              <span className="text-sm font-semibold text-soil">{t(`data.${c.name}`)}</span>
             </Link>
           ))}
         </div>
@@ -95,11 +97,11 @@ export function Home() {
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="mb-8 flex items-end justify-between">
             <div>
-              <h2 className="font-display text-3xl text-forest">Featured Products</h2>
-              <p className="mt-1 text-stone-600">Bestsellers ready to ship with COD.</p>
+              <h2 className="font-display text-3xl text-forest">{t('home.featured')}</h2>
+              <p className="mt-1 text-stone-600">{t('home.featuredDesc')}</p>
             </div>
             <Link to="/shop" className="text-sm font-semibold text-leaf hover:text-forest">
-              View all →
+              {t('home.viewAll')}
             </Link>
           </div>
           {error && (
@@ -108,7 +110,7 @@ export function Home() {
             </p>
           )}
           {loading ? (
-            <p className="text-stone-600">Loading products…</p>
+            <p className="text-stone-600">{t('shop.loading')}</p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {featured.map((p) => (
@@ -120,8 +122,8 @@ export function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 lg:px-6">
-        <h2 className="font-display text-3xl text-forest">Complete Irrigation Projects</h2>
-        <p className="mt-1 text-stone-600">From survey to seasonal maintenance.</p>
+        <h2 className="font-display text-3xl text-forest">{t('home.projects')}</h2>
+        <p className="mt-1 text-stone-600">{t('home.projectsDesc')}</p>
         <ol className="mt-10 grid gap-4 md:grid-cols-5">
           {processSteps.map((step, i) => (
             <li key={step.title} className="relative rounded-2xl border border-leaf/10 bg-white p-5">
@@ -133,14 +135,14 @@ export function Home() {
         </ol>
         <div className="mt-8">
           <Link to="/projects" className="btn-outline">
-            See recent projects
+            {t('home.recentProjects')}
           </Link>
         </div>
       </section>
 
       <section className="border-t border-leaf/10 bg-mist/50 py-16">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
-          <h2 className="font-display text-3xl text-forest">Solutions by use case</h2>
+          <h2 className="font-display text-3xl text-forest">{t('home.solutions')}</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {solutions.map((s) => (
               <Link

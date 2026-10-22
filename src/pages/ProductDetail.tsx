@@ -5,6 +5,7 @@ import { useProducts } from '../context/ProductContext'
 import { fetchProductBySlug, fileUrl } from '../lib/api'
 import { formatINR } from '../lib/money'
 import type { CropType, Product } from '../types'
+import { useTranslation } from 'react-i18next'
 
 const tabs = [
   'Description',
@@ -16,6 +17,7 @@ const tabs = [
 ] as const
 
 export function ProductDetail() {
+  const { t } = useTranslation()
   const { slug } = useParams()
   const { getBySlug } = useProducts()
   const cached = slug ? getBySlug(slug) : undefined
@@ -54,11 +56,11 @@ export function ProductDetail() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
         <h1 className="font-display text-3xl text-forest">
-          {loadError ?? 'Loading product…'}
+          {loadError ?? t('common.loading')}
         </h1>
         {loadError && (
           <Link to="/shop" className="btn-primary mt-6">
-            Back to shop
+            {t('common.back')} {t('nav.shop')}
           </Link>
         )}
       </div>
@@ -115,13 +117,13 @@ export function ProductDetail() {
 
         <div>
           {product.bestseller && (
-            <span className="rounded-md bg-amber px-2 py-0.5 text-xs font-bold text-soil">Bestseller</span>
+            <span className="rounded-md bg-amber px-2 py-0.5 text-xs font-bold text-soil">{t('product.bestseller')}</span>
           )}
           <h1 className="mt-2 font-display text-4xl text-forest">{product.name}</h1>
           <p className="mt-2 text-stone-600">{product.shortDescription}</p>
           <div className="mt-3 flex items-center gap-2 text-sm">
             <span className="text-amber">★ {product.rating}</span>
-            <span className="text-stone-400">({product.reviewCount} reviews)</span>
+            <span className="text-stone-400">({product.reviewCount} {t('product.reviews')})</span>
             <span className="text-stone-300">·</span>
             <span className="text-stone-500">{product.brand}</span>
           </div>
@@ -133,7 +135,7 @@ export function ProductDetail() {
             )}
             {discount != null && discount > 0 && (
               <span className="rounded-md bg-mist px-2 py-0.5 text-sm font-semibold text-leaf">
-                {discount}% off
+                {discount}% {t('product.off')}
               </span>
             )}
           </div>
@@ -141,7 +143,7 @@ export function ProductDetail() {
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor="farmSize">
-                Farm Size
+                {t('product.farmSize')}
               </label>
               <select
                 id="farmSize"
@@ -149,7 +151,7 @@ export function ProductDetail() {
                 value={farmSize}
                 onChange={(e) => setFarmSize(e.target.value)}
               >
-                <option value="">Select size</option>
+                <option value="">{t('product.selectSize')}</option>
                 {product.farmSizes.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -159,7 +161,7 @@ export function ProductDetail() {
             </div>
             <div>
               <label className="label" htmlFor="cropType">
-                Crop Type
+                {t('product.cropType')}
               </label>
               <select
                 id="cropType"
@@ -167,7 +169,7 @@ export function ProductDetail() {
                 value={cropType}
                 onChange={(e) => setCropType(e.target.value as CropType | '')}
               >
-                <option value="">Select crop</option>
+                <option value="">{t('product.selectCrop')}</option>
                 {product.cropTypes.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -179,7 +181,7 @@ export function ProductDetail() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <button type="button" className="btn-primary flex-1 min-w-[140px]" disabled={!product.inStock} onClick={addToCart}>
-              Add to Cart
+              {t('product.addToCart')}
             </button>
             <button
               type="button"
@@ -190,16 +192,16 @@ export function ProductDetail() {
                 navigate('/checkout')
               }}
             >
-              Buy Now
+              {t('product.buyNow')}
             </button>
           </div>
           <div className="mt-3 flex flex-wrap gap-3 text-sm">
             <Link to="/contact" className="font-semibold text-leaf hover:text-forest">
-              Request Bulk Quote
+              {t('product.bulkQuote')}
             </Link>
             <span className="text-stone-300">·</span>
             <Link to="/contact" className="font-semibold text-leaf hover:text-forest">
-              Book Installation
+              {t('product.installation')}
             </Link>
           </div>
         </div>
@@ -207,16 +209,16 @@ export function ProductDetail() {
 
       <div className="mt-14">
         <div className="flex gap-1 overflow-x-auto border-b border-leaf/15">
-          {tabs.map((t) => (
+          {tabs.map((tabName) => (
             <button
-              key={t}
+              key={tabName}
               type="button"
-              onClick={() => setTab(t)}
+              onClick={() => setTab(tabName)}
               className={`shrink-0 px-4 py-3 text-sm font-semibold transition ${
-                tab === t ? 'border-b-2 border-leaf text-forest' : 'text-stone-500 hover:text-soil'
+                tab === tabName ? 'border-b-2 border-leaf text-forest' : 'text-stone-500 hover:text-soil'
               }`}
             >
-              {t}
+              {t(`product.${['description', 'specifications', 'package', 'guide', 'faqs', 'review'][tabs.indexOf(tabName)]}`)}
             </button>
           ))}
         </div>

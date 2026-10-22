@@ -3,9 +3,11 @@ import { useCart } from '../context/CartContext'
 import { fileUrl } from '../lib/api'
 import { formatINR } from '../lib/money'
 import type { Product } from '../types'
+import { useTranslation } from 'react-i18next'
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart()
+  const { t } = useTranslation()
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-leaf/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
@@ -18,17 +20,17 @@ export function ProductCard({ product }: { product: Product }) {
         />
         {product.bestseller && (
           <span className="absolute left-3 top-3 rounded-md bg-amber px-2 py-0.5 text-xs font-bold text-soil">
-            Bestseller
+            {t('product.bestseller')}
           </span>
         )}
         {!product.inStock && (
           <span className="absolute inset-0 flex items-center justify-center bg-soil/45 text-sm font-semibold text-white">
-            Out of stock
+            {t('product.outOfStock')}
           </span>
         )}
       </Link>
       <div className="flex flex-1 flex-col p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-leaf">{product.category}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-leaf">{t(`data.${product.category}`)}</p>
         <Link to={`/product/${product.slug}`} className="mt-1 font-semibold text-soil hover:text-leaf">
           {product.name}
         </Link>
@@ -49,7 +51,7 @@ export function ProductCard({ product }: { product: Product }) {
           disabled={!product.inStock}
           onClick={() => addItem({ productId: product.id, quantity: 1 })}
         >
-          {product.inStock ? 'Add to Cart' : 'Unavailable'}
+          {product.inStock ? t('product.addToCart') : t('product.unavailable')}
         </button>
       </div>
     </article>

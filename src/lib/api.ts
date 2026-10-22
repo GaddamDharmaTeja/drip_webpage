@@ -1,6 +1,11 @@
 import type { Address, DeliveryOption, Order, Product } from '../types'
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '/api'
+let customerToken: string | null = null
+
+export function setCustomerToken(token: string | null) {
+  customerToken = token
+}
 
 /** Resolve GridFS `/api/files/...` paths against the API host in production. */
 export function fileUrl(pathOrUrl?: string | null) {
@@ -20,6 +25,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(customerToken ? { Authorization: `Bearer ${customerToken}` } : {}),
       ...(init?.headers ?? {}),
     },
     ...init,
@@ -83,6 +89,24 @@ export function createOrder(payload: {
 export function fetchOrders(phone?: string) {
   const qs = phone ? `?phone=${encodeURIComponent(phone)}` : ''
   return request<Order[]>(`/orders${qs}`)
+}
+
+export function fetchCustomerOrders() {
+  return request<Order[]>('/customer/orders')
+}
+
+export interface CustomerSessionResponse {
+  token: string
+  expiresIn: number
+  customer: { id: string; fullName: string; phone: string; email: string }
+}
+
+export function registerCustomer(payload: { fullName: string; phone: string; email: string; password: string }) {
+  return request<CustomerSessionResponse>('/customer/auth/register', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export function loginCustomer(payload: { phone: string; password: string }) {
+  return request<CustomerSessionResponse>('/customer/auth/login', { method: 'POST', body: JSON.stringify(payload) })
 }
 
 export function fetchOrder(orderNumber: string) {

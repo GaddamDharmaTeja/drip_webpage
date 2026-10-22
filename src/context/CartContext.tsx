@@ -34,12 +34,20 @@ function loadCart(): CartItem[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const { getById } = useProducts()
+  const { getById, products, loading: productsLoading, error: productsError } = useProducts()
   const [items, setItems] = useState<CartItem[]>(() => loadCart())
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   }, [items])
+
+  // A persisted cart can reference a product that was removed from the catalog.
+  // Only discard those entries after a successful catalog load, never during loading
+  // or a temporary API failure.
+  useEffect(() => {
+    if (productsLoading || productsError) return
+    setItems((current) => current.filter((item) => products.some((product) => product.id === item.productId)))
+  }, [products, productsLoading, productsError])
 
   const addItem = useCallback((item: CartItem) => {
     setItems((prev) => {

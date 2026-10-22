@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { processSteps, projects as fallbackProjects } from '../data/content'
 import { fileUrl } from '../lib/api'
+import { useTranslation } from 'react-i18next'
 
 type ProjectCase = {
   id: string
@@ -14,6 +15,7 @@ type ProjectCase = {
 }
 
 export function Projects() {
+  const { t } = useTranslation()
   const [projects, setProjects] = useState<ProjectCase[]>(
     fallbackProjects.map((p) => ({ ...p })),
   )
@@ -31,8 +33,8 @@ export function Projects() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 lg:px-6">
-      <h1 className="font-display text-4xl text-forest">Projects</h1>
-      <p className="mt-1 text-stone-600">Recent installations across vegetable, orchard, and greenhouse farms.</p>
+      <h1 className="font-display text-4xl text-forest">{t('pages.projects')}</h1>
+      <p className="mt-1 text-stone-600">{t('pages.projectsText')}</p>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
         {projects.map((p) => (
@@ -44,14 +46,14 @@ export function Projects() {
                 {p.location} · {p.area}
               </p>
               <p className="mt-2 text-sm text-stone-600">{p.summary}</p>
-              <p className="mt-2 text-sm text-stone-500">Crop: {p.crop}</p>
+              <p className="mt-2 text-sm text-stone-500">{t('calculator.cropType')}: {p.crop}</p>
             </div>
           </article>
         ))}
       </div>
 
       <section className="mt-16">
-        <h2 className="font-display text-3xl text-forest">Our process</h2>
+        <h2 className="font-display text-3xl text-forest">{t('pages.process')}</h2>
         <ol className="mt-8 grid gap-4 md:grid-cols-5">
           {processSteps.map((step, i) => (
             <li key={step.title} className="rounded-2xl border border-leaf/10 bg-white p-5">
@@ -62,7 +64,7 @@ export function Projects() {
           ))}
         </ol>
         <Link to="/contact" className="btn-primary mt-8">
-          Start a project
+          {t('pages.startProject')}
         </Link>
       </section>
     </div>

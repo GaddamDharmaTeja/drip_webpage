@@ -7,8 +7,9 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { createOrder, fetchOrders } from '../lib/api'
+import { createOrder, fetchCustomerOrders } from '../lib/api'
 import type { Address, DeliveryOption, Order } from '../types'
+import { useAuth } from './AuthContext'
 
 interface PlaceOrderInput {
   items: Array<{
@@ -25,7 +26,7 @@ interface OrdersContextValue {
   orders: Order[]
   loading: boolean
   error: string | null
-  refresh: (phone?: string) => Promise<void>
+  refresh: () => Promise<void>
   placeOrder: (input: PlaceOrderInput) => Promise<Order>
   getOrder: (id: string) => Order | undefined
 }
@@ -33,15 +34,16 @@ interface OrdersContextValue {
 const OrdersContext = createContext<OrdersContextValue | null>(null)
 
 export function OrdersProvider({ children }: { children: ReactNode }) {
+  const { customer } = useAuth()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const refresh = useCallback(async (phone?: string) => {
+  const refresh = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const data = await fetchOrders(phone)
+      const data = await fetchCustomerOrders()
       setOrders(
         data.map((o) => ({
           ...o,
@@ -56,8 +58,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    void refresh()
-  }, [refresh])
+    if (customer?.phone) void refresh()
+    else setOrders([])
+  }, [customer?.phone, refresh])
 
   const placeOrder = useCallback(async (input: PlaceOrderInput) => {
     const order = await createOrder(input)
