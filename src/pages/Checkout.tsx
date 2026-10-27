@@ -7,6 +7,7 @@ import { formatINR } from '../lib/money'
 import type { Address, DeliveryOption } from '../types'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
+import { AddressBook } from '../components/AddressBook'
 
 const emptyAddress: Address = {
   fullName: '',
@@ -26,10 +27,10 @@ export function Checkout() {
   const { items, subtotal, clearCart } = useCart()
   const { getById } = useProducts()
   const { placeOrder } = useOrders()
-  const { customer, saveAddress } = useAuth()
+  const { customer } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
-  const [address, setAddress] = useState<Address>(() => customer?.addresses[0] ?? (customer ? { ...emptyAddress, fullName: customer.fullName, phone: customer.phone, email: customer.email } : emptyAddress))
+  const [address, setAddress] = useState<Address>(() => customer?.addresses.find((item) => item.id === customer.defaultAddressId) ?? customer?.addresses[0] ?? (customer ? { ...emptyAddress, fullName: customer.fullName, phone: customer.phone, email: customer.email } : emptyAddress))
   const [delivery, setDelivery] = useState<DeliveryOption>('standard')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -84,7 +85,6 @@ export function Checkout() {
         address,
         delivery,
       })
-      if (customer) saveAddress(address)
       clearCart()
       navigate(`/orders?placed=${encodeURIComponent(order.id)}`)
     } catch (err) {
@@ -119,7 +119,7 @@ export function Checkout() {
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">
         <div className="rounded-2xl border border-leaf/10 bg-white p-6">
           {step === 0 && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <><AddressBook compact onSelect={(selected) => setAddress(selected)} /><div className="mt-6 grid gap-4 sm:grid-cols-2">
               <Field label={t('checkout.fullName')} value={address.fullName} onChange={(v) => setAddress({ ...address, fullName: v })} />
               <Field label={t('checkout.phone')} value={address.phone} onChange={(v) => setAddress({ ...address, phone: v })} />
               <Field label={t('common.email')} value={address.email} onChange={(v) => setAddress({ ...address, email: v })} className="sm:col-span-2" />
@@ -128,7 +128,7 @@ export function Checkout() {
               <Field label={t('checkout.city')} value={address.city} onChange={(v) => setAddress({ ...address, city: v })} />
               <Field label={t('checkout.state')} value={address.state} onChange={(v) => setAddress({ ...address, state: v })} />
               <Field label={t('checkout.pincode')} value={address.pincode} onChange={(v) => setAddress({ ...address, pincode: v })} />
-            </div>
+            </div></>
           )}
 
           {step === 1 && (

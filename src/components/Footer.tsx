@@ -21,12 +21,9 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-leaf-light">Learn & support</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-leaf-light">DripGrow</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link className="hover:text-white" to="/about">{t('nav.about')}</Link></li>
-            <li><Link className="hover:text-white" to="/learn">Learn</Link></li>
-            <li><Link className="hover:text-white" to="/projects">Farm stories</Link></li>
-            <li><Link className="hover:text-white" to="/resources">Guides and tips</Link></li>
             <li><Link className="hover:text-white" to="/my-farm">My Farm</Link></li>
             <li><Link className="hover:text-white" to="/contact">{t('pages.contact')}</Link></li>
           </ul>

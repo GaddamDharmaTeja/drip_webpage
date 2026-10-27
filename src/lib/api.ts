@@ -98,7 +98,16 @@ export function fetchCustomerOrders() {
 export interface CustomerSessionResponse {
   token: string
   expiresIn: number
-  customer: { id: string; fullName: string; phone: string; email: string }
+  customer: CustomerProfile
+}
+
+export interface CustomerProfile {
+  id: string
+  fullName: string
+  phone: string
+  email: string
+  addresses: Address[]
+  defaultAddressId?: string | null
 }
 
 export function registerCustomer(payload: { fullName: string; phone: string; email: string; password: string }) {
@@ -109,6 +118,29 @@ export function loginCustomer(payload: { phone: string; password: string }) {
   return request<CustomerSessionResponse>('/customer/auth/login', { method: 'POST', body: JSON.stringify(payload) })
 }
 
+export function fetchCustomerProfile() { return request<CustomerProfile>('/customer/me') }
+export function updateCustomerProfile(payload: { fullName: string; phone: string; email: string }) { return request<CustomerProfile>('/customer/me', { method: 'PUT', body: JSON.stringify(payload) }) }
+function addressPayload(address: Address) {
+  const { id: _id, ...payload } = address
+  const phoneDigits = payload.phone.replace(/\D/g, '')
+  return {
+    ...payload,
+    label: payload.label?.trim() || 'Farm address',
+    phone: phoneDigits.length === 12 && phoneDigits.startsWith('91') ? phoneDigits.slice(2) : phoneDigits,
+    pincode: payload.pincode.replace(/\s/g, ''),
+    fullName: payload.fullName.trim(),
+    email: payload.email.trim(),
+    line1: payload.line1.trim(),
+    line2: payload.line2.trim(),
+    city: payload.city.trim(),
+    state: payload.state.trim(),
+  }
+}
+export function createCustomerAddress(payload: Address) { return request<CustomerProfile>('/customer/addresses', { method: 'POST', body: JSON.stringify(addressPayload(payload)) }) }
+export function updateCustomerAddress(id: string, payload: Address) { return request<CustomerProfile>(`/customer/addresses/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(addressPayload(payload)) }) }
+export function setDefaultCustomerAddress(id: string) { return request<CustomerProfile>(`/customer/addresses/${encodeURIComponent(id)}/default`, { method: 'POST' }) }
+export function deleteCustomerAddress(id: string) { return request<CustomerProfile>(`/customer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE' }) }
+
 export function fetchOrder(orderNumber: string) {
   return request<Order>(`/orders/${encodeURIComponent(orderNumber)}`)
 }
@@ -117,6 +149,20 @@ export function submitContact(payload: { name: string; email: string; message: s
   return request<{ id: string; status: string }>('/contact', {
     method: 'POST',
     body: JSON.stringify(payload),
+  })
+}
+
+export function submitPasswordRecovery(payload: { name: string; email: string; phone?: string; accountType: 'customer' | 'admin' }) {
+  return request<{ id: string; status: string }>('/requests', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: 'PASSWORD_RESET',
+      name: payload.name,
+      email: payload.email,
+      phone: payload.phone,
+      message: `Password recovery request for ${payload.accountType} account. Verify account ownership before resetting the password.`,
+      details: { accountType: payload.accountType },
+    }),
   })
 }
 

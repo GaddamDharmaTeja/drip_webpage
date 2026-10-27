@@ -38,6 +38,8 @@ export interface CartItem {
 }
 
 export interface Address {
+  id?: string
+  label?: string
   fullName: string
   phone: string
   email: string
@@ -54,6 +56,7 @@ export interface Customer {
   phone: string
   email: string
   addresses: Address[]
+  defaultAddressId?: string | null
 }
 
 export interface SavedPlan {

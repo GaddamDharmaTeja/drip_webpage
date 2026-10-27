@@ -20,6 +20,7 @@ import { Account } from './pages/Account'
 import { Learn } from './pages/Learn'
 import { Profile } from './pages/Profile'
 import { SignIn } from './pages/SignIn'
+import { RequireCustomer } from './components/RequireCustomer'
 
 export default function App() {
   return (
@@ -30,7 +31,7 @@ export default function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="sign-in" element={<SignIn />} />
-              <Route element={<Layout />}>
+              <Route element={<RequireCustomer><Layout /></RequireCustomer>}>
                 <Route index element={<Home />} />
                 <Route path="shop" element={<Shop />} />
                 <Route path="product/:slug" element={<ProductDetail />} />

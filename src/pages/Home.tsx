@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ProductCard } from '../components/ProductCard'
 import { useProducts } from '../context/ProductContext'
-import { processSteps, solutions } from '../data/content'
+import { processSteps } from '../data/content'
 import { useTranslation } from 'react-i18next'
 
 const categories = [
@@ -29,24 +29,22 @@ export function Home() {
 
   return (
     <div>
-      <section className="relative isolate min-h-[88vh] overflow-hidden">
+      <section className="relative isolate min-h-[560px] overflow-hidden bg-forest">
         <img
           src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1800&q=80"
           alt={t('home.title')}
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-soil/85 via-soil/55 to-forest/35" />
-        <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-4 py-20 lg:px-6">
-          <p className="font-display text-5xl font-semibold tracking-tight text-white sm:text-6xl md:text-7xl">
-            DripGrow
-          </p>
-          <h1 className="mt-4 max-w-xl text-2xl font-medium leading-snug text-white/95 sm:text-3xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-emerald-950/45 to-forest/20" />
+        <div className="relative mx-auto flex min-h-[560px] max-w-[1440px] flex-col justify-center px-4 py-14 lg:px-6">
+          <p className="w-fit rounded-full bg-mist/90 px-3 py-1 text-xs font-bold text-forest">Smarter irrigation. Stronger harvests.</p>
+          <h1 className="mt-4 max-w-xl text-4xl font-bold leading-[1.06] text-white sm:text-5xl md:text-6xl">
             {t('home.title')}
           </h1>
           <p className="mt-4 max-w-md text-base text-white/75">
             {t('home.description')}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-wrap gap-3">
             <Link to="/shop" className="btn-primary">
               {t('home.shop')}
             </Link>
@@ -57,34 +55,25 @@ export function Home() {
               {t('home.quote')}
             </Link>
           </div>
+          <div className="mt-10 grid max-w-xl grid-cols-3 gap-2 sm:gap-3">
+            {values.slice(0, 3).map((value) => <div key={value.title} className="rounded-xl border border-white/25 bg-emerald-950/40 p-3 text-white backdrop-blur"><p className="text-sm font-bold">{value.title}</p><p className="mt-1 hidden text-[11px] leading-snug text-white/75 sm:block">{value.detail}</p></div>)}
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 lg:px-6">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {values.map((v) => (
-            <div key={v.title} className="rounded-2xl border border-leaf/10 bg-white/80 p-5">
-              <div className="mb-3 h-1 w-10 rounded-full bg-leaf-light" />
-              <h2 className="font-display text-xl text-forest">{v.title}</h2>
-              <p className="mt-2 text-sm text-stone-600">{v.detail}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 pb-16 lg:px-6">
+      <section className="mx-auto max-w-[1440px] px-4 py-10 lg:px-6">
         <div className="mb-8">
           <h2 className="font-display text-3xl text-forest">{t('home.categories')}</h2>
           <p className="mt-1 text-stone-600">{t('home.categoriesDesc')}</p>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
           {categories.map((c) => (
             <Link
               key={c.name}
               to={`/shop?category=${encodeURIComponent(c.name)}`}
-              className="flex flex-col items-center gap-3 rounded-full border border-leaf/15 bg-white px-4 py-6 text-center transition hover:border-leaf hover:bg-mist"
+              className="category-tile text-center"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-mist text-xl text-leaf">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-mist text-xl text-leaf">
                 {c.emoji}
               </span>
               <span className="text-sm font-semibold text-soil">{t(`data.${c.name}`)}</span>
@@ -140,7 +129,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className="border-t border-leaf/10 bg-mist/50 py-16">
+      {/* <section className="border-t border-leaf/10 bg-mist/50 py-16">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <h2 className="font-display text-3xl text-forest">{t('home.solutions')}</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -161,7 +150,7 @@ export function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   )
 }

@@ -14,7 +14,7 @@ export function Navbar() {
   const navigate = useNavigate()
   const links = [
     { to: '/', label: t('nav.home') }, { to: '/shop', label: t('nav.shop') },
-    { to: '/solutions', label: 'Find a Solution' }, { to: '/learn', label: 'Learn' },
+    // { to: '/solutions', label: 'Find a Solution' }, { to: '/learn', label: 'Learn' },
     { to: '/about', label: t('nav.about') },
   ]
 
@@ -26,13 +26,11 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-leaf/10 bg-white/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 lg:px-6">
+    <header className="store-header sticky top-0 z-50 border-b border-emerald-950/10 bg-forest text-white shadow-lg shadow-emerald-950/15">
+      <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-4 py-2.5 lg:px-6">
         <Link to="/" className="flex shrink-0 items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-leaf text-sm font-bold text-white">
-            DG
-          </span>
-          <span className="font-display text-xl font-semibold tracking-tight text-forest">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/12 text-base font-bold text-white ring-1 ring-white/20">❧</span>
+          <span className="font-display text-xl font-semibold tracking-tight text-white">
             DripGrow
           </span>
         </Link>
@@ -45,7 +43,7 @@ export function Navbar() {
               end={l.to === '/'}
               className={({ isActive }) =>
                 `rounded-md px-3 py-2 text-sm font-medium transition ${
-                  isActive ? 'bg-mist text-forest' : 'text-stone-600 hover:bg-mist/60 hover:text-forest'
+                  isActive ? 'border-b-2 border-amber text-white' : 'text-white/80 hover:text-white'
                 }`
               }
             >
@@ -56,7 +54,7 @@ export function Navbar() {
 
         <form onSubmit={onSearch} className="ml-auto hidden max-w-xs flex-1 md:block">
           <input
-            className="input"
+            className="store-search"
             placeholder={t('common.search')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -67,7 +65,7 @@ export function Navbar() {
         <div className="ml-auto flex items-center gap-2 md:ml-0">
           <Link
             to={customer ? '/my-farm' : '/sign-in'}
-            className="rounded-lg p-2 text-stone-600 transition hover:bg-mist hover:text-forest"
+            className="flex items-center gap-1 rounded-xl p-2 text-white/90 transition hover:bg-white/10 hover:text-white"
             aria-label={customer ? 'Open My Farm account' : 'Sign in or create an account'}
             title={customer ? 'My Farm' : 'Sign in'}
           >
@@ -76,7 +74,7 @@ export function Navbar() {
           </Link>
           <Link
             to="/cart"
-            className="relative rounded-lg p-2 text-stone-600 transition hover:bg-mist hover:text-forest"
+            className="relative rounded-xl p-2 text-white/90 transition hover:bg-white/10 hover:text-white"
             aria-label={t('nav.cart')}
           >
             <CartIcon />
@@ -89,7 +87,7 @@ export function Navbar() {
           <LanguageSelector />
           <button
             type="button"
-            className="rounded-lg p-2 text-stone-600 hover:bg-mist lg:hidden"
+            className="rounded-lg p-2 text-white hover:bg-white/10 lg:hidden"
             aria-label={t('nav.menu')}
             onClick={() => setOpen((v) => !v)}
           >
@@ -99,10 +97,10 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-leaf/10 bg-white px-4 py-3 lg:hidden">
+        <div className="border-t border-white/10 bg-forest px-4 py-3 lg:hidden">
           <form onSubmit={onSearch} className="mb-3 md:hidden">
             <input
-              className="input"
+              className="store-search"
               placeholder={t('common.search')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -117,17 +115,17 @@ export function Navbar() {
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
                   `rounded-md px-3 py-2.5 text-sm font-medium ${
-                    isActive ? 'bg-mist text-forest' : 'text-stone-700'
+                    isActive ? 'bg-white/15 text-white' : 'text-white/80'
                   }`
                 }
               >
                 {l.label}
               </NavLink>
             ))}
-            <Link to={customer ? '/my-farm' : '/sign-in'} className="rounded-md px-3 py-2.5 text-sm font-medium text-forest" onClick={() => setOpen(false)}>
+            <Link to={customer ? '/my-farm' : '/sign-in'} className="rounded-md px-3 py-2.5 text-sm font-medium text-white" onClick={() => setOpen(false)}>
               {customer ? 'My Farm' : 'Sign in'}
             </Link>
-            <Link to="/calculator" className="rounded-md px-3 py-2.5 text-sm font-medium text-leaf" onClick={() => setOpen(false)}>
+            <Link to="/calculator" className="rounded-md px-3 py-2.5 text-sm font-medium text-emerald-100" onClick={() => setOpen(false)}>
               {t('nav.plan')}
             </Link>
           </div>
